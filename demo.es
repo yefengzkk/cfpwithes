@@ -1,4 +1,5 @@
-occurs(A,I) or neg_occurs(A,I) :- action(A), step(I), not goal(I).
+%%action generation
+occurs(A,I) or neg_occurs(A,I) :- action(A), step(I).
 :- occurs(A,I),occurs(B,I),step(I), neg_equal(A,B).
 :- occurs(A,I), neg_occurs(A,I).
 
@@ -9,6 +10,7 @@ something_happened(I):- occurs(A,I),step(I).
 
 :- not something_happened(I),step(I).
 
+%%initial state
 step(0).
 step(1).
 action(a).
@@ -16,6 +18,7 @@ action(b).
 holds(p,0).
 holds(r,0).
 
+%%action theory
 holds(q,I+1) :-  occurs(a,I), K holds(p,I), step(I).
 holds(q,I+1) :-  occurs(a,I), -K holds(p,I), step(I).
 
@@ -25,19 +28,15 @@ neg_holds(s,I+1) :-  occurs(a,I), -K holds(r,I), step(I).
 holds(s,I+1) :-  occurs(b,I), K holds(q,I), step(I).
 holds(s,I+1) :-  occurs(b,I), -K holds(q,I), step(I).
 
+%%goal
 goal(I) :- holds(q,I),holds(s,I).
 success :- goal(I).
-:- not goal(2).
-%%success:- goal(2), K occurs(A, 0), K occurs(B, 1).
- 
-%%success(I):- K occurs(A, I), step(I).
-%%ok :- -K goal(2).
-%%:- ok.
-%%:- not success(I), step(I).
+:- not success.
  
 %%holds(X,I+1) :- holds(X,I), not neg_holds(X,I+1), step(I).
 %%neg_holds(X,I+1) :- neg_holds(X,I), not holds(X, I+1), step(I).
 
+%%inertial law
 holds(q,I+1) :- holds(q,I), not neg_holds(q,I+1), step(I).
 neg_holds(q,I+1) :- neg_holds(q,I), not holds(q,I+1), step(I).
 
