@@ -1,0 +1,8 @@
+This text aims to descript the demo conformant planning problem that we are going to solve with epistemic specification.The desciption contains three parts: initial situation, action theory and goal.
+Demo:
+initial situation:{p,r}
+action theory: a: p->q; a:r-> -s; b:q->s
+goal:{q,s}
+Demo2:
+only different from demo with the initial situation.
+initial situation:{p or q}
