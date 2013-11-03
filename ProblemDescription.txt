@@ -4,5 +4,6 @@ initial situation:{p,r}
 action theory: a: p->q; a:r-> -s; b:q->s
 goal:{q,s}
 Demo2:
-only different from demo with the initial situation.
+only different from demo with the initial situation and the goal.
 initial situation:{p or q}
+goal:{q}
