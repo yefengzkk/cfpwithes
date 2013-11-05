@@ -1,0 +1,23 @@
+
+%%action theory
+-holds(holding(X),I+1):-holds(holding(X),I), occurs(putdown(X),I), step(I).
+holds(clear(X),I+1):-holds(holding(X),I),occurs(putdown(X),I), step(I).
+holds(handempty,I+1):-holds(holding(X),I),occurs(putdown(X),I), step(I).
+holds(ontable(X),I+1):-holds(holding(X),I),occurs(putdown(X),I), step(I).
+
+-holds(ontable(X),I+1):-holds(handempty,I),holds(clear(X),I),holds(ontable(X),I),occurs(pickup(X),I), step(I).
+-holds(clear(X),I+1):-holds(handempty,I),holds(clear(X),I),holds(ontable(X),I),occurs(pickup(X),I), step(I).
+-holds(handempty,I+1):-holds(handempty,I),holds(clear(X),I),holds(ontable(X),I),occurs(pickup(X),I), step(I).
+holds(holding(X),I+1):-holds(handempty,I),holds(clear(X),I),holds(ontable(X),I),occurs(pickup(X),I), step(I).
+
+-holds(holding(X),I+1):-holds(holding(X),I),holds(clear(Y),I),occurs(stack(X,Y),I), step(I).
+-holds(clear(Y),I+1):-holds(holding(X),I),holds(clear(Y),I),occurs(stack(X,Y),I), step(I).
+holds(clear(X),I+1):-holds(holding(X),I),holds(clear(Y),I),occurs(stack(X,Y),I), step(I).
+holds(handempty,I+1):-holds(holding(X),I),holds(clear(Y),I),occurs(stack(X,Y),I), step(I).
+holds(on(X,Y),I+1):-holds(holding(X),I),holds(clear(Y),I),occurs(stack(X,Y),I), step(I).
+
+holds(holding(X),I+1):-holds(handempty,I),holds(on(X,Y),I),holds(clear(X),I),occurs(unstack(X,Y),I), step(I).
+holds(clear(Y),I+1):-holds(handempty,I),holds(on(X,Y),I),holds(clear(X),I),occurs(unstack(X,Y),I), step(I).
+-holds(clear(X),I+1):-holds(handempty,I),holds(on(X,Y),I),holds(clear(X),I),occurs(unstack(X,Y),I), step(I).
+-holds(handempty,I+1):-holds(handempty,I),holds(on(X,Y),I),holds(clear(X),I),occurs(unstack(X,Y),I), step(I).
+-holds(on(X,Y),I+1):-holds(handempty,I),holds(on(X,Y),I),holds(clear(X),I),occurs(unstack(X,Y),I), step(I).
