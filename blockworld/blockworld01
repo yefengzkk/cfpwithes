@@ -1,23 +1,165 @@
 
 %%action theory
--holds(holding(X),I+1):-holds(holding(X),I), occurs(putdown(X),I), step(I).
-holds(clear(X),I+1):-holds(holding(X),I),occurs(putdown(X),I), step(I).
-holds(handempty,I+1):-holds(holding(X),I),occurs(putdown(X),I), step(I).
-holds(ontable(X),I+1):-holds(holding(X),I),occurs(putdown(X),I), step(I).
 
--holds(ontable(X),I+1):-holds(handempty,I),holds(clear(X),I),holds(ontable(X),I),occurs(pickup(X),I), step(I).
--holds(clear(X),I+1):-holds(handempty,I),holds(clear(X),I),holds(ontable(X),I),occurs(pickup(X),I), step(I).
--holds(handempty,I+1):-holds(handempty,I),holds(clear(X),I),holds(ontable(X),I),occurs(pickup(X),I), step(I).
-holds(holding(X),I+1):-holds(handempty,I),holds(clear(X),I),holds(ontable(X),I),occurs(pickup(X),I), step(I).
+%%put down
+neg_holds(holding(X),I+1):- not neg_holds(holding(X),I), occurs(putdown(X),I), step(I).
+holds(clear(X),I+1):- not neg_holds(holding(X),I),occurs(putdown(X),I), step(I).
+holds(handempty,I+1):- not neg_holds(holding(X),I),occurs(putdown(X),I), step(I).
+holds(ontable(X),I+1):- not neg_holds(holding(X),I),occurs(putdown(X),I), step(I).
 
--holds(holding(X),I+1):-holds(holding(X),I),holds(clear(Y),I),occurs(stack(X,Y),I), step(I).
--holds(clear(Y),I+1):-holds(holding(X),I),holds(clear(Y),I),occurs(stack(X,Y),I), step(I).
-holds(clear(X),I+1):-holds(holding(X),I),holds(clear(Y),I),occurs(stack(X,Y),I), step(I).
-holds(handempty,I+1):-holds(holding(X),I),holds(clear(Y),I),occurs(stack(X,Y),I), step(I).
-holds(on(X,Y),I+1):-holds(holding(X),I),holds(clear(Y),I),occurs(stack(X,Y),I), step(I).
+%%pick up
+neg_holds(ontable(X),I+1) :- not neg_holds(handempty,I),not neg_holds(clear(X),I), not neg_holds(ontable(X),I), occurs(pickup(X),I), step(I).
+neg_holds(clear(X),I+1) :- not neg_holds(handempty,I),not neg_holds(clear(X),I), not neg_holds(ontable(X),I), occurs(pickup(X),I), step(I).
+neg_holds(handempty,I+1) :- not neg_holds(handempty,I),not neg_holds(clear(X),I), not neg_holds(ontable(X),I), occurs(pickup(X),I), step(I).
+holds(holding(X),I+1) :- not neg_holds(handempty,I),not neg_holds(clear(X),I), not neg_holds(ontable(X),I), occurs(pickup(X),I), step(I).
 
-holds(holding(X),I+1):-holds(handempty,I),holds(on(X,Y),I),holds(clear(X),I),occurs(unstack(X,Y),I), step(I).
-holds(clear(Y),I+1):-holds(handempty,I),holds(on(X,Y),I),holds(clear(X),I),occurs(unstack(X,Y),I), step(I).
--holds(clear(X),I+1):-holds(handempty,I),holds(on(X,Y),I),holds(clear(X),I),occurs(unstack(X,Y),I), step(I).
--holds(handempty,I+1):-holds(handempty,I),holds(on(X,Y),I),holds(clear(X),I),occurs(unstack(X,Y),I), step(I).
--holds(on(X,Y),I+1):-holds(handempty,I),holds(on(X,Y),I),holds(clear(X),I),occurs(unstack(X,Y),I), step(I).
+%%stack
+neg_holds(holding(X),I+1) :- not neg_holds(holding(X),I), not neg_holds(clear(Y),I), occurs(stack(X,Y),I), step(I).
+neg_holds(clear(Y),I+1) :- not neg_holds(holding(X),I), not neg_holds(clear(Y),I), occurs(stack(X,Y),I), step(I).
+holds(clear(X),I+1) :- not neg_holds(holding(X),I), not neg_holds(clear(Y),I), occurs(stack(X,Y),I), step(I).
+holds(handempty,I+1) :- not neg_holds(holding(X),I), not neg_holds(clear(Y),I), occurs(stack(X,Y),I), step(I).
+holds(on(X,Y),I+1) :- not neg_holds(holding(X),I), not neg_holds(clear(Y),I), occurs(stack(X,Y),I), step(I).
+
+%%unstack
+holds(holding(X),I+1) :- not neg_holds(handempty,I), not neg_holds(on(X,Y),I), not neg_holds(clear(X),I), occurs(unstack(X,Y),I), step(I).
+holds(clear(Y),I+1) :- not neg_holds(handempty,I), not neg_holds(on(X,Y),I), not neg_holds(clear(X),I), occurs(unstack(X,Y),I), step(I).
+neg_holds(clear(X),I+1) :- not neg_holds(handempty,I), not neg_holds(on(X,Y),I), not neg_holds(clear(X),I), occurs(unstack(X,Y),I), step(I).
+neg_holds(handempty,I+1) :- not neg_holds(handempty,I), not neg_holds(on(X,Y),I), not neg_holds(clear(X),I), occurs(unstack(X,Y),I), step(I).
+neg_holds(on(X,Y),I+1) :- not neg_holds(handempty,I), not neg_holds(on(X,Y),I), not neg_holds(clear(X),I), occurs(unstack(X,Y),I), step(I).
+
+%%initial state
+block(a).
+block(b).
+
+1{holds(handempty,0), holds(holding(a),0), holds(holding(b),0)}1.
+1{holds(holding(a),0), holds(clear(a),0), holds(on(b,a),0)}1.
+1{holds(holding(a),0), holds(ontable(a),0), holds(on(a,b),0)}1.
+1{holds(holding(b),0), holds(clear(b),0), holds(on(a, b),0)}1.
+1{holds(holding(b),0), holds(ontable(b),0), holds(on(b,a),0)}1.
+
+1{neg_holds(handempty,0), neg_holds(holding(a),0)}2.
+1{neg_holds(handempty,0), neg_holds(holding(b),0)}2.
+1{neg_holds(holding(a),0), neg_holds(holding(b),0)}2.
+
+1{neg_holds(holding(a),0), neg_holds(clear(a),0)}2.
+1{neg_holds(holding(a),0), neg_holds(on(b,a),0)}2.
+1{neg_holds(clear(a),0), neg_holds(on(b,a),0)}2.
+
+1{neg_holds(holding(a),0), neg_holds(ontable(a),0)}2.
+1{neg_holds(holding(a),0), neg_holds(on(a,b),0)}2.
+1{neg_holds(ontable(a),0), neg_holds(on(a,b),0)}2.
+
+1{neg_holds(holding(b),0), neg_holds(clear(b),0)}2.
+1{neg_holds(holding(b),0), neg_holds(on(a,b),0)}2.
+1{neg_holds(clear(b),0), neg_holds(on(a,b),0)}2.
+
+1{neg_holds(holding(b),0), neg_holds(clear(b),0)}2.
+1{neg_holds(holding(b),0), neg_holds(on(a,b),0)}2.
+1{neg_holds(holding(b),0), neg_holds(on(a,b),0)}2.
+
+1{neg_holds(on(a,b),0), neg_holds(on(b,a),0)}2.
+
+%%conformant plan length
+step(0).
+step(1).
+step(2).
+step(3).
+step(4).
+timestamp(I) :- step(I).
+timestamp(I+1) :- step(I).
+
+%%goal
+goal(I) :- holds(ontable(a),I), holds(on(b,a),I), timestamp(I).
+success :- goal(I).
+:- -K success.
+
+%%action generation
+occurs(pickup(X),I) or neg_occurs(pickup(X),I) :- action(pickup(X)),block(X),step(I).
+occurs(putdown(X),I) or ne_occurs(putdown(X),I) :- action(putdown(X)),block(X),step(I).
+occurs(stack(X,Y),I) or neg_occurs(stack(X,Y),I) :- action(stack(X,Y)), block(X), block(Y), step(I).
+occurs(unstack(X,Y),I) or neg_occurs(unstack(X,Y),I) :- action(unstack(X,Y)), block(X), block(Y), step(I).
+
+action(pickup(X)) :- block(X).
+action(putdown(X)) :- block(X).
+action(stack(X,Y)) :- block(X), block(Y), neg_sameblock(X,Y).
+action(unstack(X,Y)) :- block(X), block(Y), neg_sameblock(X,Y).
+
+sameblock(X,X) :- block(X).
+neg_sameblock(X,Y) :- block(X), block(Y), not sameblock(X,Y).
+
+:- occurs(A,I), occurs(B,I), step(I), neg_equal(A,B).
+equal(A,A) :- action(A).
+neg_equal(A,B) :- action(A), action(B), not equal(A,B).
+
+%%complementary literals
+:- neg_occrus(X,I), occurs(X,I).
+:- holds(X,I), neg_holds(X,I).
+
+%%inertial law
+holds(X,I+1) :- holds(X,I), not neg_holds(X,I), step(I).
+neg_holds(X,I+1) :- neg_holds(X,I), not holds(X,I), step(I).
+
+%%constraints for all partial states
+:- -K occurs(X,I), neg_holds(handempty,0), neg_holds(holding(a),0), occurs(X,I).
+:- -K occurs(X,I), not neg_holds(handempty,0), neg_holds(holding(a),0), occurs(X,I).
+:- -K occurs(X,I), neg_holds(handempty,0), not neg_holds(holding(a),0), occurs(X,I).
+
+:- neg_holds(handempty,0), neg_holds(holding(b),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(handempty,0), neg_holds(holding(b),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(handempty,0), not neg_holds(holding(b),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(holding(a),0), neg_holds(holding(b),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(holding(a),0), neg_holds(holding(b),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(holding(a),0), not neg_holds(holding(b),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(holding(a),0), neg_holds(clear(a),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(holding(a),0), neg_holds(clear(a),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(holding(a),0), not neg_holds(clear(a),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(holding(a),0), neg_holds(on(b,a),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(holding(a),0), neg_holds(on(b,a),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(holding(a),0), not neg_holds(on(b,a),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(clear(a),0), neg_holds(on(b,a),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(clear(a),0), neg_holds(on(b,a),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(clear(a),0), not neg_holds(on(b,a),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(holding(a),0), neg_holds(ontable(a),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(holding(a),0), neg_holds(ontable(a),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(holding(a),0), not neg_holds(ontable(a),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(holding(a),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(holding(a),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(holding(a),0), not neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(ontable(a),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(ontable(a),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(ontable(a),0), not neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(holding(b),0), neg_holds(clear(b),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(holding(b),0), neg_holds(clear(b),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(holding(b),0), not neg_holds(clear(b),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(holding(b),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(holding(b),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(holding(b),0), not neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(clear(b),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(clear(b),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(clear(b),0), not neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(holding(b),0), neg_holds(clear(b),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(holding(b),0), neg_holds(clear(b),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(holding(b),0), not neg_holds(clear(b),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(holding(b),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(holding(b),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(holding(b),0), not neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(holding(b),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(holding(b),0), neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(holding(b),0), not neg_holds(on(a,b),0), occurs(X,I), -K occurs(X,I).
+
+:- neg_holds(on(a,b),0), neg_holds(on(b,a),0), occurs(X,I), -K occurs(X,I).
+:- not neg_holds(on(a,b),0), neg_holds(on(b,a),0), occurs(X,I), -K occurs(X,I).
+:- neg_holds(on(a,b),0), not neg_holds(on(b,a),0), occurs(X,I), -K occurs(X,I).
